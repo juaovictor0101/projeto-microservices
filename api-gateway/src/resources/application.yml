@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            - id: pedidos-route
+              uri: lb://MICROSERVICE-PEDIDOS
+              predicates:
+                - Path=/pedidos/**
+
+            - id: produtos-route
+              uri: lb://MICROSERVICE-PRODUTOS
+              predicates:
+                - Path=/produtos/**
+
+eureka:
+  instance:
+    appname: api-gateway
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

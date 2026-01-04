@@ -1,0 +1,11 @@
+###
+POST http://localhost:8081/produtos
+Content-Type: application/json
+
+{
+  "nome" : "Monitor 27",
+  "preco" : 1200.00
+}
+
+
+###

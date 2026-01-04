@@ -1,0 +1,6 @@
+### Listar Produtos (Passando pelo Gateway na porta 8888)
+GET http://localhost:8080/produtos
+Accept: application/json
+
+### Criar Pedido (Passando pelo Gateway na porta 8888)
+POST http://localhost:8082/pedidos?produtoId=2&quantidade=4
