@@ -1,25 +1,73 @@
 version: '3.8'
+
 services:
+  # Banco de Dados (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres-microservices
+    environment:
+      POSTGRES_USER: dbjaum
+      POSTGRES_PASSWORD: "1101"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres-data:/var/lib/postgresql/data
+
+  # Discovery Service
   discovery:
     build: ./discovery-service
+    container_name: discovery-service
     ports:
       - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres
 
+  # Microservice Produtos
+  produtos:
+    build: ./microservice-produtos
+    container_name: ms-produtos
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/produtodb
+      - SPRING_DATASOURCE_USERNAME=dbjaum
+      - SPRING_DATASOURCE_PASSWORD=1101
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+    depends_on:
+      - postgres
+      - discovery
+
+  # Microservice Pedidos
+  pedidos:
+    build: ./microservice-pedidos
+    container_name: ms-pedidos
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/pedidodb
+      - SPRING_DATASOURCE_USERNAME=dbjaum
+      - SPRING_DATASOURCE_PASSWORD=1101
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+    depends_on:
+      - postgres
+      - discovery
+
+  # API Gateway
   gateway:
     build: ./api-gateway
+    container_name: api-gateway
     ports:
-      - "8080:8080"
-    depends_on:
-      - discovery
-
-  produtos:
-    build: ./microservico-usuarios
+      - "8888:8888"
     environment:
-      - EUREKA_URI=http://discovery:8761/eureka
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery:8761/eureka/
+      - SERVER_PORT=8888
     depends_on:
       - discovery
+      - pedidos
+      - produtos
 
-  pedidos:
-    build: ./microservico-pedidos
-    depends_on:
-      - discovery
+volumes:
+  postgres-data:

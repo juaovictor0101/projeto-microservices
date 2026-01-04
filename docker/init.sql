@@ -1,0 +1,2 @@
+CREATE DATABASE pedidodb;
+CREATE DATABASE produtodb;
