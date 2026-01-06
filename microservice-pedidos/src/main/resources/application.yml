@@ -1,11 +1,11 @@
 server:
-  port: 8082
+  port: 8083
 
 spring:
   application:
     name: microservice-pedidos
   datasource:
-    url: jdbc:postgresql://localhost:5432/pedidodb
+    url: jdbc:postgresql://postgres:5432/pedidodb
     username: dbjaum
     password: "1101"
   jpa:
@@ -17,4 +17,4 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://discovery:8761/eureka/
